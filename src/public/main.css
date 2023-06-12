@@ -1,0 +1,18 @@
+.textProducts{
+    text-align: center;
+    margin-top: 40px;
+    margin-bottom: 40px;
+    width: 100%;
+    color: rgb(84, 11, 87);
+}
+
+.products-container{
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+}
+
+.card{
+    margin-left: 40px;
+    margin-bottom: 40px;
+}

@@ -1,0 +1,20 @@
+[
+    {
+        "id": 1,
+        "title": "Zapatillas",
+        "description": "zapatillas deportivas",
+        "price": 1500,
+        "thumbnail": "url.com/url",
+        "code": "zap1",
+        "stock": 52
+}, 
+    {
+        "id": 2,
+        "title": "Camiseta termica",
+        "desc": "camisetas para entrenar",
+        "price": 500,
+        "thumbnail": "url.com/url",
+        "code": "zap2",
+        "stock": 100
+}
+]

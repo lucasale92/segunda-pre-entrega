@@ -1,0 +1,67 @@
+<!-- Importa el archivo -->
+<script src="/socket.io/socket.io.js"></script>
+<!-- Importa el  "index.js" -->
+<script src="/js/index.js"></script>
+
+<!-- Formulario -->
+<form id="form-products" style="margin: auto">
+  <div style="margin-bottom: 16px">
+    <div class="col-md-2 mx-auto">
+      <label for="title"> Titulo: </label>
+      <input
+        type="text"
+        name="title"
+        id="form-title"
+        style="margin-bottom: 16px"
+        class="form-control"
+      />
+    </div>
+    <div class="col-md-2 mx-auto">
+      <label for="price"> Precio: </label>
+      <input
+        type="number"
+        name="price"
+        id="form-price"
+        style="margin-bottom: 16px"
+        step="1"
+        class="form-control"
+      />
+    </div>
+    <div class="col-md-2 mx-auto">
+      <label for="thumbnail"> URL de la Imagen: </label>
+      <input
+        type="text"
+        name="thumbnail"
+        id="form-thumbnail"
+        style="margin-bottom: 16px"
+        class="form-control"
+      />
+    </div>
+    <div style="display: flex; justify-content: center; align-items: center">
+      <input type="submit" value="Crear producto" class="btn btn-primary" />
+    </div>
+  </div>
+</form>
+
+<div>
+  {{#if data}}
+    <h1 class="textProducts">Productos</h1>
+    <div class="products-container" id="products">
+    {{#each data}}
+      <div class="card" style="width: 18rem;">
+        <img src={{thumbnails}} class="card-img-top" alt="..." />
+        <div class="card-body">
+<!-- Muestra el título del producto y el precio -->
+          <h5 class="card-title">{{title}}</h5> 
+          <p class="card-text">${{price}}</p> 
+          <a href="#" class="btn btn-primary">Add to cart</a> 
+        </div>
+      </div>
+    {{/each}}
+    </div>
+  {{else}}
+    No hay productos 
+  {{/if}}
+</div>
+
+<script src="/js/realTime.js"></script>
