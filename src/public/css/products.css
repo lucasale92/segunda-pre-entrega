@@ -1,0 +1,37 @@
+*{
+    margin: 0;
+    padding: 0;
+}
+@font-face {
+    font-family: "google-font";
+    src: url('../assets/ShadowsIntoLight-Regular.ttf');
+}
+.products__more-img{
+    width: 100px;
+}
+.add{
+    border: 1px solid red;
+}
+.add__form{
+    width: 300px;
+    position: relative;
+    left: 43%;
+    text-align: center;
+}
+
+.add__form input{
+    margin-top: 5px;
+    padding: 5px;
+    display: block;
+    position: relative;
+    left: 19%;
+}
+
+.container__checkbox{
+    position: relative;
+    left: 29%;
+}
+
+img{
+    width: 150px;
+}

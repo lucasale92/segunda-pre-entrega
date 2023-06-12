@@ -1,20 +1,33 @@
-<div>
-  {{#if data}}
-    <h1 class="textProducts">Productos</h1>
-    <div class="products-container" id="products">
-    {{#each data}}
-      <div class="card" style="width: 18rem;">
-        <img src={{thumbnails}} class="card-img-top" alt="..." />
-        <div class="card-body">
-<!-- Muestra el título y precio del producto -->
-          <h5 class="card-title">{{title}}</h5> 
-          <p class="card-text">${{price}}</p> 
-          <a href="#" class="btn btn-secundary">Add to cart</a> 
-        </div>
-      </div>
-    {{/each}}
+<header>
+    <div class="title__text--container">
+        <h1 class="title__text"> <a href="/views/products">E-Commerce</a></h1>
     </div>
-  {{else}}
-    No hay productos 
-  {{/if}}
-</div>
+    <h3>Hola! {{first_name}} {{last_name}} ROL: {{rol}}</h3>
+    <div class="search-bar">
+       <form method="get">
+        <label for="search">Buscar Producto:</label>
+            <input type="search" name="search" id="search">
+            <button class="search-btn"><i class="bi bi-search"></i></button>
+       </form>
+    </div>
+    <nav class="navigation">
+        <a href="/views/carts">CARRITO</a>
+        <a href="/api/chat">CONTACTO</a>
+        <a href="/api/realtimeproducts">PRODUCTOS</a>
+        <form action="/api/session/logout" method="post">
+            <button>Cerrar sesion</button>
+        </form>
+    </nav>
+</header>
+<main>
+    {{#each docs}}
+        <div class="products__container">
+            <div class="products__img-container">
+                <img class="product__img" src="{{this.thumbnail}}">
+            </div>
+            <div class="products__texts">
+                <a href="/views/products/{{this.id}}"><h2 class="product__title">Producto: {{this.title}}</h2></a>
+            </div>
+        </div>
+    {{/each}}
+</main>

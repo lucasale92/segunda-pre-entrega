@@ -1,0 +1,17 @@
+<header>
+    <h1>Chat de la compañía</h1>
+</header>
+<main>
+    <div class="messageLog">
+        <ul id="mensajes"></ul>
+    </div>
+    <div class="chatBox">
+        <form action="" id="form">
+            <textarea placeholder="Escriba su mensaje." name="" id="msgArea" cols="30" rows="10" autocomplete="off"></textarea>
+            <button class="sendBtn" id="send">Enviar</button>
+        </form>
+    </div>
+</main>
+<script src=" https://cdn.jsdelivr.net/npm/sweetalert2@11.7.1/dist/sweetalert2.all.min.js "></script>
+<script src="/socket.io/socket.io.js"></script>
+<script src="/static/js/{{script}}"></script>

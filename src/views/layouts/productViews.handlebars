@@ -1,0 +1,36 @@
+<header>
+    <div class="title__text--container">
+        <h1 class="title__text"> <a href="/views/products">E-Commerce</a></h1>
+    </div>
+    <div class="search-bar">
+       <form method="get">
+        <label for="search">Buscar Producto:</label>
+            <input type="search" name="search" id="search">
+            <button class="search-btn"><i class="bi bi-search"></i></button>
+       </form>
+    </div>
+    <nav class="navigation">
+        <a href="/api/carts">CARRITO</a>
+        <a href="/api/chat">CONTACTO</a>
+        <a href="/api/realtimeproducts">PRODUCTOS</a>
+    </nav>
+</header>
+<main>
+    <div class="products__container">
+        <div class="products__img-container">
+            <img class="product__img" src="{{product.thumbnail}}">
+        </div>
+    <div class="products__texts">
+        <h2 class="product__title">Producto: {{product.title}}</h2></a>
+            <h3 class="product__price">Precio: {{product.price}}</h3>
+            <h3 class="product__description">{{product.description}}</h3>
+            <h3 class="product__stock">Disponibles: {{product.stock}}</h3>
+    </div>
+        <form action="#" id="newProduct">
+            <div class="add-button-container">
+                <button class="add-button" id="addButton" value="{{product._id}}"><i class="bi bi-cart"></i></button>
+            </div>
+        </form>
+    </div>
+</main>
+<script src="/static/js/{{script}}"></script>

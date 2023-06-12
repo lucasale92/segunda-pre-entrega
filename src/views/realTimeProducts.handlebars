@@ -1,67 +1,57 @@
-<!-- Importa el archivo -->
-<script src="/socket.io/socket.io.js"></script>
-<!-- Importa el  "index.js" -->
-<script src="/js/index.js"></script>
+<header class="title">
+    <h1 class="title__text">Agregar productos</h1>
+</header>
+<main>
+<div class="add">
+        <form class="add__form" id="addForm" method="post" enctype="multipart/form-data">
+            <label for="title">Titulo del producto</label>
+                <input type="text" name="title" placeholder="EJ: Producto 1" required>
 
-<!-- Formulario -->
-<form id="form-products" style="margin: auto">
-  <div style="margin-bottom: 16px">
-    <div class="col-md-2 mx-auto">
-      <label for="title"> Titulo: </label>
-      <input
-        type="text"
-        name="title"
-        id="form-title"
-        style="margin-bottom: 16px"
-        class="form-control"
-      />
-    </div>
-    <div class="col-md-2 mx-auto">
-      <label for="price"> Precio: </label>
-      <input
-        type="number"
-        name="price"
-        id="form-price"
-        style="margin-bottom: 16px"
-        step="1"
-        class="form-control"
-      />
-    </div>
-    <div class="col-md-2 mx-auto">
-      <label for="thumbnail"> URL de la Imagen: </label>
-      <input
-        type="text"
-        name="thumbnail"
-        id="form-thumbnail"
-        style="margin-bottom: 16px"
-        class="form-control"
-      />
-    </div>
-    <div style="display: flex; justify-content: center; align-items: center">
-      <input type="submit" value="Crear producto" class="btn btn-primary" />
-    </div>
-  </div>
-</form>
+            <label for="description">Descripción del producto</label>
+                <input type="text" name="description" placeholder="EJ: 2 GB de RAM, 1 TB de espacio, etc..." required>
 
-<div>
-  {{#if data}}
-    <h1 class="textProducts">Productos</h1>
-    <div class="products-container" id="products">
-    {{#each data}}
-      <div class="card" style="width: 18rem;">
-        <img src={{thumbnails}} class="card-img-top" alt="..." />
-        <div class="card-body">
-<!-- Muestra el título del producto y el precio -->
-          <h5 class="card-title">{{title}}</h5> 
-          <p class="card-text">${{price}}</p> 
-          <a href="#" class="btn btn-primary">Add to cart</a> 
-        </div>
-      </div>
-    {{/each}}
-    </div>
-  {{else}}
-    No hay productos 
-  {{/if}}
-</div>
+            <label for="price">Precio del producto $:</label>
+                <input type="number" name="price" placeholder="EJ: 1000" min="0" required>
+            
+            <label for="thumbnail">Imagen del producto</label>
+                <input type="file" name="thumbnail" placeholder="EJ: https://placeholder/img.png" id="formFile">
+            
+            <label for="code">Código del producto:</label>
+                <input type="text" name="code" placeholder="EJ: PRO-RYZEN-5-3600" required>
+            <label for="stock">Cantidades disponibles:</label>
+                <input type="number" name="stock" placeholder="EJ: 5" min="0" required>
 
-<script src="/js/realTime.js"></script>
+            <label for="status">Status:</label>
+                <div class="container__checkbox" required>
+                    <input type="checkbox" name="status">
+                </div>
+
+            <label for="category">Categoria del producto: </label>
+                <input type="text" name="category" placeholder="EJ: Procesador" required>
+            
+            <button>Agregar</button>
+        </form>
+    </div>
+    <div id="newProducts">
+        {{#each docs}}
+            <h2>Producto: {{this.title}}</h2>
+            <h3>Descripción: {{this.description}}</h3>
+            <p>ID: {{this._id}}</p>
+            <p>Costo: {{this.price}}</p>
+            <p>Disponible: {{this.status}}</p>
+            <img src="{{this.thumbnail}}">
+            <hr>
+        {{/each}}
+    </div>
+    
+    <div class="delete">
+        <h1>Eliminar productos</h1>
+        <form id="deleteProducts" class="add__form">
+            <input type="text" name="id" id="eraseProduct" placeholder="id del articulo a eliminar" min="0">
+            <button id="deleteButton">ELIMINAR</button>
+        </form>
+    </div>
+
+    <script src="/socket.io/socket.io.js"></script>
+    <script src="/static/js/{{script}}"></script>
+</main>

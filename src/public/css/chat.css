@@ -1,0 +1,43 @@
+*{
+    margin: 0;
+    padding: 0;
+}
+header{
+    text-align: center;
+    height: 100px;
+    box-sizing: border-box;
+    padding-top: 30px;
+    background-color: dodgerblue;
+    color: #3d0244;
+    font-family: sans-serif;
+}
+main{
+    text-align: center;
+    align-items: center;
+    background-color: #3d0244;
+    height: 90vh;
+}
+textarea{
+    resize: none;
+    width: 500px;
+    display: inline-block;
+    position: relative;
+}
+
+.messageLog{
+    background-color: white;
+    margin-top: 50px;
+    box-sizing: border-box;
+    display: inline-block;
+    margin-bottom:50px ;
+    width: 500px;
+    height: 500px;
+}
+
+.sendBtn{
+    position: absolute;
+    bottom: 170px;
+    right: 710px;
+    width: 100px;
+    height: 40px;
+}
