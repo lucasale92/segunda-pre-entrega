@@ -1,172 +1,149 @@
-const { Router } = require('express')
-const router = Router()
-const mongoManager = require('../DAO/productManagerMongo/productMMongo.js')
-const { auth } = require('../middleware/auth.js')
-const Manager = require('../DAO/productManagerMongo/cartManagerM.js')
+import { Router } from "express";
+import ProductManager from "../DAO/mongo/managers/products.js";
+import CartManager from "../DAO/mongo/managers/carts.js";
+const routerV = Router();
+const pm = new ProductManager()
+const CM = new CartManager()
 
-//const { ProductManager } = require('../DAO/productsManager/proManJSON.js')
-//const path = './src/DAO/productsManager/data.json'
-//const Manager = new ProductManager(path)
+let cart = []
 
-/*Cambiar el auth por el autenticador de JWT*/
-router.get('/products', auth, async (req, res) => {
+routerV.get('/', async (req, res) => {
     try {
-        const { first_name, last_name, rol } = req.session.user
-        let { docs } = await mongoManager.getProduct({})
-        const object = {
-            title: "Tienda Online",
-            docs,
-            style: "home.css",
-            first_name,
-            last_name,
-            rol
-        }
-        res.render('home', object)
-    } catch (error) {
-        return res.status(500).send(error)
+        // Productos 
+        const products = await pm.getProductsView();
+
+        res.render("index", { valueReturned: products })
     }
+    catch (err) {
+        console.log(err);
+    }
+
 })
 
-/*Cambiat auth por el autenticador de JWT*/
-router.get('/products/:pid', auth, async (req, res) => {
+routerV.use('/realTimeProducts', (req, res) => {
+
+    res.render('realTimeProducts', {})
+})
+
+
+routerV.get('/chat', async (req, res) => {
+    res.render('chat');
+})
+
+routerV.get('/products', async (req, res) => {
     try {
-        if (!req.session.user) {
-            return res.redirect('/views/session/login')
+
+        let { limit, page, sort, category } = req.query
+        
+
+        const options = {
+            page: Number(page) || 1,
+            limit: Number(limit) || 10,
+            sort: { price: Number(sort) },
+            lean: true
+        };
+
+        if (!(options.sort.price === -1 || options.sort.price === 1)) {
+            delete options.sort
         }
-        const product = await mongoManager.getProduct(req.params)
-        const object = {
-            pageTitle: "producto",
-            product,
-            style: "home.css",
-            script: "viewProducts.js"
+
+
+        const links = (products) => {
+            let prevLink;
+            let nextLink;
+            if (req.originalUrl.includes('page')) {
+                prevLink = products.hasPrevPage ? req.originalUrl.replace(`page=${products.page}`, `page=${products.prevPage}`) : null;
+                nextLink = products.hasNextPage ? req.originalUrl.replace(`page=${products.page}`, `page=${products.nextPage}`) : null;
+                return { prevLink, nextLink };
+            }
+            if (!req.originalUrl.includes('?')) {
+                prevLink = products.hasPrevPage ? req.originalUrl.concat(`?page=${products.prevPage}`) : null;
+                nextLink = products.hasNextPage ? req.originalUrl.concat(`?page=${products.nextPage}`) : null;
+                return { prevLink, nextLink };
+            }
+            prevLink = products.hasPrevPage ? req.originalUrl.concat(`&page=${products.prevPage}`) : null;
+            nextLink = products.hasNextPage ? req.originalUrl.concat(`&page=${products.nextPage}`) : null;
+            return { prevLink, nextLink };
+
         }
-        res.status(200).render('productViews', object)
+
+        // Devuelve un array con las categorias disponibles y compara con la query "category"
+        const categories = await pm.categories()
+
+        const result = categories.some(categ => categ === category)
+        if (result) {
+
+            const products = await pm.getProducts({ category }, options);
+            const { prevLink, nextLink } = links(products);
+            const { totalPages, prevPage, nextPage, hasNextPage, hasPrevPage, docs, page } = products
+
+            if (page > totalPages) return res.render('notFound', { pageNotFound: '/products' })
+
+            return res.render('products', { products: docs, totalPages, prevPage, nextPage, hasNextPage, hasPrevPage, prevLink, nextLink, page, cart: cart.length });
+        }
+
+        const products = await pm.getProducts({}, options);
+
+        const { totalPages, prevPage, nextPage, hasNextPage, hasPrevPage, docs } = products
+        const { prevLink, nextLink } = links(products);
+
+        if (page > totalPages) return res.render('notFound', { pageNotFound: '/products' })
+
+        return res.render('products', { products: docs, totalPages, prevPage, nextPage, hasNextPage, hasPrevPage, prevLink, nextLink, page, cart: cart.length });
     } catch (error) {
-        return res.status(400).send({
-            status: `ERROR`,
-            error
-        })
+        console.log(error);
     }
 })
 
-router.get('/carts/:cid', async (req, res) => {
+routerV.get('/products/inCart', async (req, res) => {
+
+    const productsInCart = await Promise.all(cart.map(async (product) => {
+        const productDB = await pm.getProductById(product._id);
+        return { title: productDB.title, quantity: product.quantity }
+    }))
+
+    return res.send({ cartLength: cart.length, productsInCart })
+})
+
+routerV.post('/products', async (req, res) => {
     try {
-        const { docs } = await Manager.getCarts(req.params)
-        const [cart] = docs
-        const viewCart = {
-            pageTitle: `Carrito #${req.params.cid}`,
-            renderCart: cart.products
+        const { product, finishBuy } = req.body
+        
+        if (product) {
+            if (product.quantity > 0) {
+                const findId = cart.findIndex(productCart => productCart._id === product._id);
+                (findId !== -1) ? cart[findId].quantity += product.quantity : cart.push(product)
+            }
+            else {
+                return res.render('products', { message: 'Quantity must be greater than 0' })
+            }
         }
-        res.render('cartView', viewCart)
+        if (finishBuy) {
+            await CM.addCart(cart)
+            cart.splice(0, cart.length)
+        }
+
+        return res.render('products')
     } catch (error) {
-        return `ERROR: ${error}`
+        console.log(error);
     }
 })
 
-router.get('/session', auth, async (req, res) => {
+routerV.get('/carts/:cid', async (req, res) => {
     try {
-        const renderSessionObj = {
-            pageTitle: 'Sessions',
-            script: 'sessions.js',
-            style: 'sessions.css'
-        }
-        if (!req.session.user) {
-            renderSessionObj.showLogin = true
-            return res.render('session', renderSessionObj)
-        }
-        renderSessionObj.showLogin = false
-        res.render('session', renderSessionObj)
-    } catch (error) {
-        if (error) {
-            res.status(400).send({
-                status: 'Error',
-                payload: error
-            })
-        }
+        const { cid } = req.params
+
+        const result = await CM.getCartById(cid)
+        
+        if(result === null || typeof(result) === 'string') return res.render('cart', { result: false, message: 'ID not found' });
+
+        return res.render('cart', { result });
+
+
+    } catch (err) {
+        console.log(err);
     }
+
 })
 
-/*
-passport-local 
-router.get('/session/register', async (req, res) => {
-    try {
-        const renderRegisterObj = {
-            title: 'registro',
-            script: 'sessions.js',
-            style: 'sessions.css'
-        }
-        if (req.session.user) {
-            return res.redirect('/views/products')
-        }
-        res.status(200).render('register', renderRegisterObj)
-    } catch (error) {
-        return error.message
-    }
-}) 
-*/
-
-//jwt
-router.get('/session/register', async (req, res) => {
-    try {
-        const renderRegisterObj = {
-            title: 'registro',
-            script: 'sessions.js',
-            style: 'sessions.css'
-        }
-        res.status(200).render('register', renderRegisterObj)
-    } catch (error) {
-        return error.message
-    }
-})
-router.get('/session/login', (req, res) => {
-    const renderLoginObj = {
-        title: 'Login',
-        script: 'sessions.js',
-        style: 'sessions.css'
-    }
-    res.status(200).render('login', renderLoginObj)
-})
-
-router.get('/session/perfil', auth, (req, res) => {
-    const { first_name, last_name, age } = req.session.user
-    const renderProfileObj = {
-        title: 'Perfil',
-        script: 'sessions.js',
-        style: 'sessions.css',
-        first_name,
-        last_name,
-        age
-    }
-    res.status(200).render('perfil', renderProfileObj)
-})
-
-router.get('/session/restorepass', async (req, res) => {
-    try {
-        const renderRestorePass = {
-            title: 'Restaurar contraseña',
-            script: 'sessions.js',
-            style: 'sessions.css',
-        }
-        res.status(200).render('restore', renderRestorePass)
-    } catch (error) {
-        if (error) {
-            return error
-        }
-    }
-})
-
-//Pruebas de JWT desde el localstorage.
-router.get('/test', async (req, res) => {
-    try {
-        const renderLogin = {
-            title: 'titulo',
-            script: 'viewProducts.js',
-            style: 'products.css'
-        }
-        res.render('perfil', renderLogin)
-    } catch (error) {
-        if (error) return error.message
-    }
-})
-
-module.exports = router
+export default routerV

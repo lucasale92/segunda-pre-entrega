@@ -1,57 +1,61 @@
-<header class="title">
-    <h1 class="title__text">Agregar productos</h1>
-</header>
-<main>
-<div class="add">
-        <form class="add__form" id="addForm" method="post" enctype="multipart/form-data">
-            <label for="title">Titulo del producto</label>
-                <input type="text" name="title" placeholder="EJ: Producto 1" required>
-
-            <label for="description">Descripción del producto</label>
-                <input type="text" name="description" placeholder="EJ: 2 GB de RAM, 1 TB de espacio, etc..." required>
-
-            <label for="price">Precio del producto $:</label>
-                <input type="number" name="price" placeholder="EJ: 1000" min="0" required>
-            
-            <label for="thumbnail">Imagen del producto</label>
-                <input type="file" name="thumbnail" placeholder="EJ: https://placeholder/img.png" id="formFile">
-            
-            <label for="code">Código del producto:</label>
-                <input type="text" name="code" placeholder="EJ: PRO-RYZEN-5-3600" required>
-            <label for="stock">Cantidades disponibles:</label>
-                <input type="number" name="stock" placeholder="EJ: 5" min="0" required>
-
-            <label for="status">Status:</label>
-                <div class="container__checkbox" required>
-                    <input type="checkbox" name="status">
-                </div>
-
-            <label for="category">Categoria del producto: </label>
-                <input type="text" name="category" placeholder="EJ: Procesador" required>
-            
-            <button>Agregar</button>
-        </form>
+<form class="row g-3 mx-4" id="form">
+    <div class="col-md-4">
+        <label for="" class="form-label">
+            Title:
+        </label>
+        <input name="title" type="text" class="form-control" id="" required>
     </div>
-    <div id="newProducts">
-        {{#each docs}}
-            <h2>Producto: {{this.title}}</h2>
-            <h3>Descripción: {{this.description}}</h3>
-            <p>ID: {{this._id}}</p>
-            <p>Costo: {{this.price}}</p>
-            <p>Disponible: {{this.status}}</p>
-            <img src="{{this.thumbnail}}">
-            <hr>
-        {{/each}}
+    <div class="col-md-4">
+        <label for="" class="form-label">
+            Description:
+        </label>
+        <input name="description" type="text" class="form-control" id="" required>
     </div>
-    
-    <div class="delete">
-        <h1>Eliminar productos</h1>
-        <form id="deleteProducts" class="add__form">
-            <input type="text" name="id" id="eraseProduct" placeholder="id del articulo a eliminar" min="0">
-            <button id="deleteButton">ELIMINAR</button>
-        </form>
+    <div class="col-md-4">
+        <label for="" class="form-label">
+            Price:
+        </label>
+        <input name="price" type="number" class="form-control" id="" required>
     </div>
+    <div class="col-md-4">
+        <label for="" class="form-label">
+            Code:
+        </label>
+        <input name="code" type="text" class="form-control" id="" required>
+    </div>
+    <div class="col-md-4">
+        <label for="" class="form-label">
+            Stock:
+        </label>
+        <input name="stock" type="number" class="form-control" id="" required>
+    </div>
+    <div class="form-check mx-4">
+        <input name="status" class="form-check-input" type="checkbox" value="true" id="flexCheckChecked" checked="">
+        <label class="form-check-label" for="flexCheckChecked">
+            Status
+        </label>
+    </div>
+    <div class="col-md-4">
+        <label for="" class="form-label">
+            Category:
+        </label>
+        <input name="category" type="text" class="form-control" id="" required>
+    </div>
+    <div class="col-md-4">
+        <label for="" class="form-label">
+            Thumbnails:
+        </label>
+        <input name="thumbnails" type="file" class="form-control" id="">
+    </div>
+    <div class="col-12">
+        <button class="btn btn-primary" type="submit">Enviar producto</button>
+    </div>
+</form>
 
-    <script src="/socket.io/socket.io.js"></script>
-    <script src="/static/js/{{script}}"></script>
-</main>
+<div class="row mt-4" id="products">
+
+</div>
+
+
+<script src="/socket.io/socket.io.js"></script>
+<script src="/js/realTimeProducts.js"></script>
