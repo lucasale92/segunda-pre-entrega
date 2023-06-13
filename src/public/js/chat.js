@@ -1,38 +1,52 @@
-const socket = io()
-const sendBtn = document.querySelector('#send')
-const msg = document.querySelector('#msgArea')
-const form = document.querySelector('#form')
+const socket = io({
+    autoConnect:false
+});
+const chatBox = document.getElementById('chatBox');
 
-let newUser;
+let user;
 
 Swal.fire({
-    title: 'Identificate',
-    input: 'text',
-    text: 'Ingresar el nombre de usuario.',
-    inputValidator: (value) => {
-        return !value && 'El nombre de usuario es obligatorio'
+    title:"Identifícate",
+    text:"Para acceder al chat, coloca tu username",
+    icon:"question",
+    input:"text",
+    inputValidator: (value) =>{
+        return !value && '¡Necesitas identificarte antes de entrar!'
     },
-    allowOutsideClick: false,
-    allowEscapeKey: false
-}).then(result => {
-    newUser = result.value
-    socket.emit('client:createUser', newUser)
+    allowOutsideClick:false,
+    allowEscapeKey:false
+}).then(result=>{
+    user = result.value;
+    socket.connect()
+    socket.emit('chat:newParticipant',user)
 })
 
-sendBtn.addEventListener('click', (e) => {
-    e.preventDefault()
-
-    let chatUser = {
-        userName: newUser,
-        newMsg: msg.value
+chatBox.addEventListener('keyup',evt=>{
+    if(evt.key==="Enter"){
+        if(chatBox.value.trim().length>0){
+            socket.emit('chat:message', {user,message:chatBox.value.trim()})
+            chatBox.value = ''
+        }
     }
-
-    socket.emit('client:newMesage', chatUser)
-
-    form.reset()
 })
 
-socket.on('server:chatHistory', (data) => {
-    const historial = document.querySelector('#mensajes')
-    historial.innerText += `\n${data[0].user} Dice: ${data[0].message[0].content}`
+
+socket.on('chat:messageLogs',data=>{
+    const logs = document.getElementById('logs');
+    let message = "";
+    data.forEach(log=>{
+        message+= `${log.user} dice: ${log.message} <br/>`
+    })
+    logs.innerHTML = message;
+})
+
+socket.on('chat:newConnection',data=>{
+    Swal.fire({
+        toast:true,
+        position: 'top-end',
+        showConfirmButton: false,
+        timer:2000,
+        title:`${data} se unió al chat`,
+        icon:"success"
+    })
 })
